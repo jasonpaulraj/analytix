@@ -1,0 +1,37 @@
+name: Update Version
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  update-version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Update version.json
+        run: |
+          VERSION="${{ github.event.release.tag_name }}"
+          COMMIT="${{ github.sha }}"
+          DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          
+          mkdir -p .github
+          echo "{" > .github/version.json
+          echo "    \"version\": \"$VERSION\"," >> .github/version.json
+          echo "    \"build_date\": \"$DATE\"," >> .github/version.json
+          echo "    \"commit_hash\": \"$COMMIT\"" >> .github/version.json
+          echo "}" >> .github/version.json
+          
+          cat .github/version.json
+      
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "${{ github.event.sender.email || 'github-actions@github.com' }}"
+          git config --local user.name "${{ github.event.sender.name || github.actor }}"
+          git add .github/version.json
+          git commit -m "Update version to ${{ github.event.release.tag_name }}"
+          git push
