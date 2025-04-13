@@ -18,11 +18,11 @@
         <h2 class="section-header">
             <i class="ri-service-line system-icon"></i>Applications
         </h2>
-        <div class="bg-system-secondary/50 rounded-xl xs:p-6 grid-background">
+        <div class="p-4 bg-system-secondary/50 rounded-xl xs:p-6 grid-background">
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 llg:grid-cols-4 xxl:grid-cols-5 gap-6" id="docker-containers">
                 @if(!empty($services))
                 @foreach($services as $service)
-                <div class="mb-5 metric-card bg-system-secondary/50 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300">
+                <div class="mt-5 mb-5 bg-system-secondary/50 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300">
                     <div class="flex-center text-center">
                         <div class="bg-system-secondary rounded-lg flex items-center justify-center">
                             <img src="{{ $service[2] }}" alt="{{$service[0]}}" class="w-12 h-12" />
@@ -59,14 +59,14 @@
     <section class="mb-12">
         <h2 class="section-header"><i class="ri-settings-2-line system-icon"></i>Services Status</h2>
         <!-- Uptime Kuma -->
-        <div class="bg-system-secondary/50 rounded-xl xs:p-6 grid-background">
+        <div class="p-6 p-4 bg-system-secondary/50 rounded-xl xs:p-6 grid-background">
             @if(!empty($uptimeKumaMonitorStats))
             @if(!empty($uptimeKumaMonitorStats['uptime_kuma_info']))
             @php($uptimeKumaInfo = $uptimeKumaMonitorStats['uptime_kuma_info'])
             <h3 class="text-2xl font-semibold mb-4 text-gray-300 border-b border-system-secondary pb-2 flex items-center">
                 <i class="ri-pulse-line mr-2"></i>Uptime Kuma
             </h3>
-            <div class="bg-system-secondary/50 rounded-xl xs:p-6 grid-background">
+            <div class="p-4 bg-system-secondary/50 rounded-xl xs:p-6 grid-background">
                 <div class="p-4 bg-system-secondary/50 rounded-lg metric-card">
                     <div class="flex flex-wrap justify-between items-center mb-3">
                         <div class="flex items-center">
@@ -145,9 +145,9 @@
             <br class="xs:hidden" />
             @endif
             @endif
-            <div class="bg-system-secondary/50 rounded-xl xs:p-6 grid-background">
+            <div class="p-4 bg-system-secondary/50 rounded-xl xs:p-6 grid-background">
                 @if(!empty($uptimeKumaMonitors))
-                <div class="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 llg:grid-cols-2 xl:grid-cols-2 xxl:grid-cols-2 2xl:grid-cols-3 gap-6">
+                <div class="grid xs:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 llg:grid-cols-3 xl:grid-cols-3 xxl:grid-cols-3 2xl:grid-cols-3 gap-6">
                     @foreach($uptimeKumaMonitors as $monitor)
                     <!-- Mobile view (below 600px) -->
                     <div class="metric-card xs:hidden">
@@ -420,7 +420,7 @@
                 </div>
 
                 @if(!empty($proxmoxCluster))
-                <div class="">
+                <div class="p-4">
                     <div class="metric-card grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
                         <div class="bg-system-secondary/50 rounded-lg p-3">
                             <div class="text-sm font-medium text-gray-300">Nodes</div>
@@ -630,7 +630,7 @@
         <h2 class="section-header">
             <i class="ri-heart-pulse-line system-icon"></i>ServiceMesh
         </h2>
-        <div class="bg-system-secondary/50 rounded-xl xs:p-6 grid-background">
+        <div class="p-4 bg-system-secondary/50 rounded-xl xs:p-6 grid-background">
             @if(isset($ServiceMeshHealthStatus['status']) && $ServiceMeshHealthStatus['status'] !== 'error')
             @if(isset($ServiceMeshHealthStatus['services']))
             <div class="p-4 flex items-center justify-between grid grid-cols-2 gap-6">
