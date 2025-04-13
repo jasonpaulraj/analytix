@@ -4,8 +4,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: analytix
-    container_name: analytix-app
+    container_name: app
     restart: unless-stopped
     working_dir: /var/www
     volumes:

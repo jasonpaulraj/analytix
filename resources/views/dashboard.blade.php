@@ -19,12 +19,23 @@
             <i class="ri-service-line system-icon"></i>Applications
         </h2>
         <div class="bg-system-secondary/50 rounded-xl xs:p-6 grid-background">
-            <div class="grid grid-cols-3 md:grid-cols-3 lg:grid-cols-5 gap-6" id="docker-containers">
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 llg:grid-cols-4 xxl:grid-cols-5 gap-6" id="docker-containers">
                 @if(!empty($services))
                 @foreach($services as $service)
-                <div class="aspect-square flex flex-col items-center justify-center p-4 transition-all duration-200 hover:bg-system-secondary/80 cursor-pointer" onclick="window.open('{{ $service[1] }}', '_blank')">
-                    <img src="{{ $service[2] }}" alt="{{ $service[0] }} logo" class="w-12 h-12 mb-3">
-                    <span class="font-large text-gray-300 text-center">{{ $service[0] }}</span>
+                <div class="mb-5 metric-card bg-system-secondary/50 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300">
+                    <div class="flex-center text-center">
+                        <div class="bg-system-secondary rounded-lg flex items-center justify-center">
+                            <img src="{{ $service[2] }}" alt="{{$service[0]}}" class="w-12 h-12" />
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-300">{{$service[0]}}</h3>
+                        <p class="mx-auto text-sm text-gray-400">
+                            Virtualization Platform
+                        </p>
+                        <a href="{{ $service[1] }}" target="_blank" style="width: 6rem;margin: 1rem auto 0 auto;" class="mt-2 px-4 py-2 bg-system-highlight/20 hover:bg-system-highlight/40 text-blue-400 rounded-md transition-colors duration-300 flex items-center">
+                            <span>Open</span>
+                            <i class="ri-external-link-line ml-2"></i>
+                        </a>
+                    </div>
                 </div>
                 @endforeach
                 @else
@@ -46,9 +57,7 @@
 
     <!-- Services Status -->
     <section class="mb-12">
-        <h2 class="section-header">
-            <i class="ri-settings-2-line system-icon"></i>Services Status
-        </h2>
+        <h2 class="section-header"><i class="ri-settings-2-line system-icon"></i>Services Status</h2>
         <!-- Uptime Kuma -->
         <div class="bg-system-secondary/50 rounded-xl xs:p-6 grid-background">
             @if(!empty($uptimeKumaMonitorStats))
@@ -57,8 +66,7 @@
             <h3 class="text-2xl font-semibold mb-4 text-gray-300 border-b border-system-secondary pb-2 flex items-center">
                 <i class="ri-pulse-line mr-2"></i>Uptime Kuma
             </h3>
-            <!-- Keep the outer div but modify the inner content -->
-            <div class="bg-system-secondary/50 rounded-xl llg:p-6 grid-background">
+            <div class="bg-system-secondary/50 rounded-xl xs:p-6 grid-background">
                 <div class="p-4 bg-system-secondary/50 rounded-lg metric-card">
                     <div class="flex flex-wrap justify-between items-center mb-3">
                         <div class="flex items-center">
@@ -76,7 +84,7 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="grid grid-cols-2 md:grid-cols-2 gap-4">
                         <div class="bg-system-secondary/50 rounded-lg p-2">
                             <div class="text-sm font-medium text-gray-300">Monitors</div>
                             <div class="flex items-center justify-between">
@@ -413,7 +421,7 @@
 
                 @if(!empty($proxmoxCluster))
                 <div class="p-4">
-                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                    <div class="metric-card grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
                         <div class="bg-system-secondary/50 rounded-lg p-3">
                             <div class="text-sm font-medium text-gray-300">Nodes</div>
                             <div class="text-xl font-semibold text-blue-400">{{ $proxmoxCluster['nodes'] }}</div>
@@ -481,7 +489,7 @@
                     </div>
                 </div>
                 <div class="p-4">
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="metric-card grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                         <div class="bg-system-secondary/50 rounded-lg p-3">
                             <div class="flex items-center mb-2">
                                 <i class="ri-cpu-line text-blue-400 mr-2 text-xl"></i>
@@ -583,8 +591,7 @@
                     </div>
                     @else
                     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                        @for($i = 0; $i < 3; $i++)
-                            <div class="bg-system-secondary/50 rounded-lg p-4 border border-system-secondary/30 animate-pulse">
+                        @for($i = 0; $i < 3; $i++) <div class="bg-system-secondary/50 rounded-lg p-4 border border-system-secondary/30 animate-pulse">
                             <div class="flex items-center justify-between mb-3">
                                 <div class="h-6 bg-gray-700 rounded w-3/4"></div>
                                 <div class="status-indicator bg-gray-700"></div>
@@ -683,8 +690,7 @@
 
         @if(isset($ServiceMeshHealthStatus['status']) && $ServiceMeshHealthStatus['status'] === 'error')
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            @for($i = 0; $i < $skeleton; $i++)
-                <div class="p-4 bg-system-secondary/70 rounded-lg metric-card animate-pulse">
+            @for($i = 0; $i < $skeleton; $i++) <div class="p-4 bg-system-secondary/70 rounded-lg metric-card animate-pulse">
                 <div class="flex items-center justify-between mb-3">
                     <div class="h-6 bg-gray-700 rounded w-3/4"></div>
                     <div class="status-indicator bg-gray-700"></div>
@@ -724,5 +730,6 @@
             bar.classList.add('transition-all', 'duration-500');
         });
     });
+
 </script>
 @endsection
