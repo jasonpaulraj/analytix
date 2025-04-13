@@ -26,23 +26,31 @@ RUN curl -sL https://deb.nodesource.com/setup_18.x | bash - \
     && apt-get install -y nodejs
 
 # Set working directory
-WORKDIR /var/www
+RUN mkdir -p app
 
-# Copy existing application directory contents
-COPY . /var/www
+# Copy the application code
+COPY . .
 
-# Create bootstrap/cache directory and set permissions
-RUN mkdir -p /var/www/bootstrap/cache && chmod -R 775 /var/www/bootstrap/cache
+# Create necessary directories and set permissions
+RUN mkdir -p /var/www/app/bootstrap/cache \
+    && mkdir -p /var/www/app/storage/logs \
+    && mkdir -p /var/www/app/storage/framework/sessions \
+    && mkdir -p /var/www/app/storage/framework/views \
+    && mkdir -p /var/www/app/storage/framework/cache \
+    && mkdir -p /var/www/app/.cache/composer \
+    && chown -R www-data:www-data /var/www/app \
+    && chmod -R 755 /var/www/app \
+    && chmod -R 775 /var/www/app/bootstrap/cache \
+    && chmod -R 775 /var/www/app/storage \
+    && chmod -R 775 /var/www/app/.cache \
+    && git config --global --add safe.directory /var/www
+
+# Switch to www-data user for remaining operations
+USER www-data
 
 # Install dependencies
 RUN composer install
 RUN npm install
-
-# Copy existing application directory permissions
-COPY --chown=www-data:www-data . /var/www
-
-# Change current user to www-data
-USER www-data
 
 # Expose port 9000 and start php-fpm server
 EXPOSE 9000
