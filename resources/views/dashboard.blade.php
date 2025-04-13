@@ -83,7 +83,6 @@
                             <span>{{ $uptimeKumaInfo['server_timezone'] }} ({{ $uptimeKumaInfo['server_timezone_offset'] }})</span>
                         </div>
                     </div>
-
                     <div class="grid grid-cols-2 md:grid-cols-2 gap-4">
                         <div class="bg-system-secondary/50 rounded-lg p-2">
                             <div class="text-sm font-medium text-gray-300">Monitors</div>
@@ -96,7 +95,6 @@
                                 <span class="text-yellow-400">Maintenance: {{ $uptimeKumaMonitorStats['maintenance_monitors_count'] ?? 0 }}</span>
                             </div>
                         </div>
-
                         <div class="bg-system-secondary/50 rounded-lg p-2">
                             <div class="text-sm font-medium text-gray-300">Performance</div>
                             <div class="flex items-center justify-between">
@@ -143,6 +141,8 @@
                     </div>
                 </div>
             </div>
+            <br class="xs:hidden" />
+            <br class="xs:hidden" />
             @endif
             @endif
             <div class="bg-system-secondary/50 rounded-xl xs:p-6 grid-background">
@@ -420,7 +420,7 @@
                 </div>
 
                 @if(!empty($proxmoxCluster))
-                <div class="p-4">
+                <div class="">
                     <div class="metric-card grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
                         <div class="bg-system-secondary/50 rounded-lg p-3">
                             <div class="text-sm font-medium text-gray-300">Nodes</div>
@@ -623,98 +623,86 @@
                 @endif
             </div>
         </div>
-</div>
-</section>
+    </section>
 
-<!-- ServiceMesh -->
-<section class="mb-12">
-    <h2 class="section-header">
-        <i class="ri-heart-pulse-line system-icon"></i>ServiceMesh
-    </h2>
-    <div class="bg-system-secondary/50 rounded-xl xs:p-6 grid-background">
-        @if(isset($ServiceMeshHealthStatus['status']) && $ServiceMeshHealthStatus['status'] !== 'error')
-        <h3 class="text-2xl font-semibold mb-4 text-gray-300 border-b border-system-secondary pb-2 flex items-center">
-            <i class="ri-health-book-line mr-2"></i>Health Status
-        </h3>
-        <div class="mb-6 p-4 bg-system-secondary/70 rounded-lg metric-card">
-            <div class="flex flex-wrap justify-between items-center mb-3">
-                <div class="flex items-center">
-                    <span class="status-indicator {{ $ServiceMeshHealthStatus['status'] === 'healthy' ? 'status-up' : 'status-down' }} mr-2"></span>
-                    <span class="text-gray-300 font-medium">Overall Status: {{ ucfirst($ServiceMeshHealthStatus['status']) }}</span>
+    <!-- ServiceMesh -->
+    <section class="mb-12">
+        <h2 class="section-header">
+            <i class="ri-heart-pulse-line system-icon"></i>ServiceMesh
+        </h2>
+        <div class="bg-system-secondary/50 rounded-xl xs:p-6 grid-background">
+            @if(isset($ServiceMeshHealthStatus['status']) && $ServiceMeshHealthStatus['status'] !== 'error')
+            @if(isset($ServiceMeshHealthStatus['services']))
+            <div class="p-4 flex items-center justify-between grid grid-cols-2 gap-6">
+                @foreach($ServiceMeshHealthStatus['services'] as $serviceName => $service)
+                <div class="p-4 bg-system-secondary/70 rounded-lg metric-card">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center">
+                            <i class="ri-settings-line text-blue-400 mr-2"></i>
+                            <span class="text-gray-300 font-medium capitalize">{{ $serviceName }}</span>
+                        </div>
+                        <span class="status-indicator {{ $service['status'] === 'healthy' ? 'status-up' : ($service['status'] === 'unknown' ? 'status-warning' : 'status-down') }}"></span>
+                    </div>
+                    <div class="grid grid-cols-1 gap-3">
+                        <div class="bg-system-secondary/50 rounded-lg">
+                            <div class="text-sm font-medium text-gray-300">Status</div>
+                            <div class="text-{{ $service['status'] === 'healthy' ? 'green' : ($service['status'] === 'unknown' ? 'yellow' : 'red') }}-400">{{ ucfirst($service['status']) }}</div>
+                        </div>
+                        <div class="bg-system-secondary/50 rounded-lg">
+                            <div class="text-sm font-medium text-gray-300">Message</div>
+                            <div class="text-gray-400 custom-scrollbar z-40" style="
+                                text-overflow: ellipsis;
+                                overflow-y: scroll;
+                                white-space: normal;
+                                height: 3rem;
+                                width: 100%;
+                                word-break: break-word;
+                                padding-right: 8px;
+                            ">{{ $service['message'] ?? 'Logging is disabled.' }}</div>
+                        </div>
+                        <div class="bg-system-secondary/50 rounded-lg">
+                            <div class="text-sm font-medium text-gray-300">Enabled</div>
+                            <div class="text-{{ $service['enabled'] === 'true' ? 'green' : 'yellow' }}-400">{{ $service['enabled'] === 'true' ? 'Yes' : 'No' }}</div>
+                        </div>
+                    </div>
                 </div>
-                <div class="text-xs text-gray-400">
-                    Last checked: {{ $ServiceMeshHealthStatus['timestamp'] ? \Carbon\Carbon::parse($ServiceMeshHealthStatus['timestamp'])->setTimezone('Asia/Singapore')->format('M j, Y g:i A') : 'N/A' }}
-                </div>
+                @endforeach
             </div>
-        </div>
-
-        @if(isset($ServiceMeshHealthStatus['services']))
-        <h3 class="text-2xl font-semibold mb-4 text-gray-300 border-b border-system-secondary pb-2 flex items-center">
-            <i class="ri-service-line mr-2"></i>Services Status
-        </h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            @foreach($ServiceMeshHealthStatus['services'] as $serviceName => $service)
+            @else
             <div class="p-4 bg-system-secondary/70 rounded-lg metric-card">
-                <div class="flex items-center justify-between mb-3">
-                    <div class="flex items-center">
-                        <i class="ri-settings-line text-blue-400 mr-2"></i>
-                        <span class="text-gray-300 font-medium capitalize">{{ $serviceName }}</span>
-                    </div>
-                    <span class="status-indicator {{ $service['status'] === 'healthy' ? 'status-up' : ($service['status'] === 'unknown' ? 'status-warning' : 'status-down') }}"></span>
-                </div>
-                <div class="grid grid-cols-1 gap-3">
-                    <div class="bg-system-secondary/50 rounded-lg">
-                        <div class="text-sm font-medium text-gray-300">Status</div>
-                        <div class="text-{{ $service['status'] === 'healthy' ? 'green' : ($service['status'] === 'unknown' ? 'yellow' : 'red') }}-400">{{ ucfirst($service['status']) }}</div>
-                    </div>
-                    @if($service['message'])
-                    <div class="bg-system-secondary/50 rounded-lg">
-                        <div class="text-sm font-medium text-gray-300">Message</div>
-                        <div class="text-gray-400">{{ $service['message'] }}</div>
-                    </div>
-                    @endif
-                    <div class="bg-system-secondary/50 rounded-lg">
-                        <div class="text-sm font-medium text-gray-300">Enabled</div>
-                        <div class="text-{{ $service['enabled'] === 'true' ? 'green' : 'yellow' }}-400">{{ $service['enabled'] === 'true' ? 'Yes' : 'No' }}</div>
-                    </div>
-                </div>
+                <div class="text-yellow-400">No service data available</div>
             </div>
-            @endforeach
-        </div>
-        @else
-        <div class="p-4 bg-system-secondary/70 rounded-lg metric-card">
-            <div class="text-yellow-400">No service data available</div>
-        </div>
-        @endif
-        @endif
+            @endif
+            @endif
 
-        @if(isset($ServiceMeshHealthStatus['status']) && $ServiceMeshHealthStatus['status'] === 'error')
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            @for($i = 0; $i < $skeleton; $i++) <div class="p-4 bg-system-secondary/70 rounded-lg metric-card animate-pulse">
-                <div class="flex items-center justify-between mb-3">
-                    <div class="h-6 bg-gray-700 rounded w-3/4"></div>
-                    <div class="status-indicator bg-gray-700"></div>
-                </div>
-                <div class="space-y-3">
-                    <div class="bg-system-secondary/50 rounded-lg">
-                        <div class="h-4 bg-gray-700 rounded w-1/2"></div>
-                        <div class="h-4 bg-gray-700 rounded w-3/4 mt-2"></div>
+            @if(isset($ServiceMeshHealthStatus['status']) && $ServiceMeshHealthStatus['status'] === 'error')
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                @for($i = 0; $i < $skeleton; $i++) <div class="p-4 bg-system-secondary/70 rounded-lg metric-card animate-pulse">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="h-6 bg-gray-700 rounded w-3/4"></div>
+                        <div class="status-indicator bg-gray-700"></div>
                     </div>
-                    <div class="bg-system-secondary/50 rounded-lg">
-                        <div class="h-4 bg-gray-700 rounded w-1/2"></div>
-                        <div class="h-4 bg-gray-700 rounded w-3/4 mt-2"></div>
+                    <div class="space-y-3">
+                        <div class="bg-system-secondary/50 rounded-lg">
+                            <div class="h-4 bg-gray-700 rounded w-1/2"></div>
+                            <div class="h-4 bg-gray-700 rounded w-3/4 mt-2"></div>
+                        </div>
+                        <div class="bg-system-secondary/50 rounded-lg">
+                            <div class="h-4 bg-gray-700 rounded w-1/2"></div>
+                            <div class="h-4 bg-gray-700 rounded w-3/4 mt-2"></div>
+                        </div>
+                        <div class="bg-system-secondary/50 rounded-lg">
+                            <div class="h-4 bg-gray-700 rounded w-1/2"></div>
+                            <div class="h-4 bg-gray-700 rounded w-3/4 mt-2"></div>
+                        </div>
                     </div>
-                    <div class="bg-system-secondary/50 rounded-lg">
-                        <div class="h-4 bg-gray-700 rounded w-1/2"></div>
-                        <div class="h-4 bg-gray-700 rounded w-3/4 mt-2"></div>
-                    </div>
-                </div>
+            </div>
+            @endfor
         </div>
-        @endfor
-    </div>
-    @endif
-    </div>
-</section>
+        @endif
+    </section>
+</div>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Handle progress bars
