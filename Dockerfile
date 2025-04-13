@@ -31,6 +31,9 @@ WORKDIR /var/www
 # Copy existing application directory contents
 COPY . /var/www
 
+# Create bootstrap/cache directory and set permissions
+RUN mkdir -p /var/www/bootstrap/cache && chmod -R 775 /var/www/bootstrap/cache
+
 # Install dependencies
 RUN composer install
 RUN npm install
