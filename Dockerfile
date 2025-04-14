@@ -26,32 +26,31 @@ RUN curl -sL https://deb.nodesource.com/setup_18.x | bash - \
     && apt-get install -y nodejs
 
 # Set working directory
-WORKDIR /var/www/app
+WORKDIR /var/www/html/app
 
 # Copy the application code
-COPY . /var/www/app
+COPY . /var/www/html/app
 
 # Create necessary directories and set permissions
-RUN mkdir -p /var/www/app/bootstrap/cache \
-    && mkdir -p /var/www/app/storage/logs \
-    && mkdir -p /var/www/app/storage/framework/sessions \
-    && mkdir -p /var/www/app/storage/framework/views \
-    && mkdir -p /var/www/app/storage/framework/cache \
-    && mkdir -p /var/www/app/.cache/composer \
-    && chown -R www-data:www-data /var/www/app \
-    && chmod -R 755 /var/www/app \
-    && chmod -R 775 /var/www/app/bootstrap/cache \
-    && chmod -R 775 /var/www/app/storage \
-    && chmod -R 775 /var/www/app/.cache \
-    && git config --global --add safe.directory /var/www/app
+RUN mkdir -p /var/www/html/app/bootstrap/cache \
+    && mkdir -p /var/www/html/app/storage/logs \
+    && mkdir -p /var/www/html/app/storage/framework/sessions \
+    && mkdir -p /var/www/html/app/storage/framework/views \
+    && mkdir -p /var/www/html/app/storage/framework/cache \
+    && mkdir -p /var/www/html/app/.cache/composer \
+    && chown -R www-data:www-data /var/www/html/app \
+    && chmod -R 755 /var/www/html/app \
+    && chmod -R 775 /var/www/html/app/bootstrap/cache \
+    && chmod -R 775 /var/www/html/app/storage \
+    && chmod -R 775 /var/www/html/app/.cache \
+    && git config --global --add safe.directory /var/www/html/app
 
 # Switch to www-data user for remaining operations
 USER www-data
 
 # Install dependencies
-RUN mkdir -p /var/www/.npm && chown -R www-data:www-data /var/www/.npm
-RUN cd /var/www/app && composer install
-RUN cd /var/www/app && npm install
+RUN cd /var/www/html/app && composer install
+RUN cd /var/www/html/app && npm install
 
 # Expose port 9000 and start php-fpm server
 EXPOSE 9000

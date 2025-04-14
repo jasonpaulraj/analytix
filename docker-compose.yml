@@ -6,9 +6,9 @@ services:
       dockerfile: Dockerfile
     container_name: app
     restart: unless-stopped
-    working_dir: /var/www/app
+    working_dir: /var/www/html/app
     volumes:
-      - ./:/var/www/app
+      - ./:/var/www/html/app
     networks:
       - analytix-network
     depends_on:
