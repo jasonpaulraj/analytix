@@ -49,6 +49,7 @@ RUN mkdir -p /var/www/app/bootstrap/cache \
 USER www-data
 
 # Install dependencies
+RUN mkdir -p /var/www/.npm && chown -R www-data:www-data /var/www/.npm
 RUN cd /var/www/app && composer install
 RUN cd /var/www/app && npm install
 
