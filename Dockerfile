@@ -42,8 +42,7 @@ RUN mkdir -p /var/www/app/bootstrap/cache \
     && chmod -R 755 /var/www/app \
     && chmod -R 775 /var/www/app/bootstrap/cache \
     && chmod -R 775 /var/www/app/storage \
-    && chmod -R 775 /var/www/app/.cache \
-    && git config --global --add safe.directory /var/www
+    && chmod -R 775 /var/www/app/.cache 
 
 # Switch to www-data user for remaining operations
 USER www-data
