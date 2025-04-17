@@ -26,31 +26,38 @@ RUN curl -sL https://deb.nodesource.com/setup_18.x | bash - \
     && apt-get install -y nodejs
 
 # Set working directory
-WORKDIR /var/www/html/app
+WORKDIR /var/www/app
 
 # Copy the application code
-COPY . /var/www/html/app
+COPY . /var/www/app
 
 # Create necessary directories and set permissions
-RUN mkdir -p /var/www/html/app/bootstrap/cache \
-    && mkdir -p /var/www/html/app/storage/logs \
-    && mkdir -p /var/www/html/app/storage/framework/sessions \
-    && mkdir -p /var/www/html/app/storage/framework/views \
-    && mkdir -p /var/www/html/app/storage/framework/cache \
-    && mkdir -p /var/www/html/app/.cache/composer \
-    && chown -R www-data:www-data /var/www/html/app \
-    && chmod -R 755 /var/www/html/app \
-    && chmod -R 775 /var/www/html/app/bootstrap/cache \
-    && chmod -R 775 /var/www/html/app/storage \
-    && chmod -R 775 /var/www/html/app/.cache \
-    && git config --global --add safe.directory /var/www/html/app
+RUN mkdir -p /var/www/app/bootstrap/cache \
+    && mkdir -p /var/www/app/storage/logs \
+    && mkdir -p /var/www/app/storage/framework/sessions \
+    && mkdir -p /var/www/app/storage/framework/views \
+    && mkdir -p /var/www/app/storage/framework/cache \
+    && mkdir -p /var/www/.cache/composer \
+    && mkdir -p /var/www/.npm \
+    && chown -R www-data:www-data /var/www/app \
+    && chown -R www-data:www-data /var/www/.cache \
+    && chown -R www-data:www-data /var/www/.npm \
+    && chmod -R 755 /var/www/app \
+    && chmod -R 775 /var/www/app/bootstrap/cache \
+    && chmod -R 775 /var/www/app/storage \
+    && chmod -R 775 /var/www/.cache \
+    && chmod -R 775 /var/www/.npm \
+    && git config --global --add safe.directory /var/www/app
 
 # Switch to www-data user for remaining operations
 USER www-data
 
 # Install dependencies
-RUN cd /var/www/html/app && composer install
-RUN cd /var/www/html/app && npm install
+RUN cd /var/www/app && composer install
+RUN cd /var/www/app && npm install
+
+# Build assets with Vite
+RUN cd /var/www/app && npm run build
 
 # Expose port 9000 and start php-fpm server
 EXPOSE 9000
