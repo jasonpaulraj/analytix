@@ -8,9 +8,12 @@ services:
     restart: unless-stopped
     working_dir: /var/www/app
     volumes:
-      - ./:/var/www/app
+      - ./:/var/www/app:delegated
+      - composer_cache:/var/www/.cache/composer
+      - npm_cache:/var/www/.npm
     networks:
       - analytix-network
+    user: www-data
 
   nginx:
     image: nginx:alpine
@@ -19,7 +22,7 @@ services:
     ports:
       - "${APP_PORT:-80}:80"
     volumes:
-      - ./:/var/www/app
+      - ./:/var/www/app:ro
       - ./docker/nginx:/etc/nginx/conf.d
     networks:
       - analytix-network
@@ -29,3 +32,7 @@ services:
 networks:
   analytix-network:
     driver: bridge
+
+volumes:
+  composer_cache:
+  npm_cache:

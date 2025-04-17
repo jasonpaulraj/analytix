@@ -28,9 +28,6 @@ RUN curl -sL https://deb.nodesource.com/setup_18.x | bash - \
 # Set working directory
 WORKDIR /var/www/app
 
-# Copy the application code
-COPY . /var/www/app
-
 # Create necessary directories and set permissions
 RUN mkdir -p /var/www/app/bootstrap/cache \
     && mkdir -p /var/www/app/storage/logs \
@@ -46,19 +43,43 @@ RUN mkdir -p /var/www/app/bootstrap/cache \
     && chmod -R 775 /var/www/app/bootstrap/cache \
     && chmod -R 775 /var/www/app/storage \
     && chmod -R 775 /var/www/.cache \
-    && chmod -R 775 /var/www/.npm \
-    && git config --global --add safe.directory /var/www/app
+    && chmod -R 775 /var/www/.npm
+
+# Copy the application code
+COPY --chown=www-data:www-data . /var/www/app
+
+# Create startup script
+RUN echo '#!/bin/bash\n\
+echo "Running startup script..."\n\
+# Fix git permissions\n\
+git config --system --add safe.directory /var/www/app\n\
+# Ensure cache directories exist and have correct permissions\n\
+mkdir -p /var/www/app/bootstrap/cache\n\
+mkdir -p /var/www/app/storage/framework/{sessions,views,cache}\n\
+chown -R www-data:www-data /var/www/app/bootstrap/cache\n\
+chown -R www-data:www-data /var/www/app/storage\n\
+chmod -R 775 /var/www/app/bootstrap/cache\n\
+chmod -R 775 /var/www/app/storage\n\
+# Start PHP-FPM\n\
+exec php-fpm\n\
+' > /usr/local/bin/start.sh
+
+# Make the script executable
+RUN chmod +x /usr/local/bin/start.sh
+
+# Configure git for www-data user
+RUN git config --system --add safe.directory /var/www/app
 
 # Switch to www-data user for remaining operations
 USER www-data
 
 # Install dependencies
-RUN cd /var/www/app && composer install
-RUN cd /var/www/app && npm install
+RUN composer install --no-interaction --no-scripts
+RUN npm install
 
 # Build assets with Vite
-RUN cd /var/www/app && npm run build
+RUN npm run build
 
 # Expose port 9000 and start php-fpm server
 EXPOSE 9000
-CMD ["php-fpm"]
+CMD ["/usr/local/bin/start.sh"]
