@@ -60,6 +60,11 @@ chown -R www-data:www-data /var/www/app/bootstrap/cache\n\
 chown -R www-data:www-data /var/www/app/storage\n\
 chmod -R 775 /var/www/app/bootstrap/cache\n\
 chmod -R 775 /var/www/app/storage\n\
+# Generate application key if not exists\n\
+if [ -f /var/www/app/.env ] && ! grep -q "^APP_KEY=" /var/www/app/.env || grep -q "^APP_KEY=$" /var/www/app/.env; then\n\
+  echo "Generating application key..."\n\
+  php artisan key:generate --force\n\
+fi\n\
 # Start PHP-FPM\n\
 exec php-fpm\n\
 ' > /usr/local/bin/start.sh
