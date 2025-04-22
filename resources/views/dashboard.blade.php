@@ -150,7 +150,23 @@
                 <div class="grid xs:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 llg:grid-cols-3 xl:grid-cols-3 xxl:grid-cols-3 2xl:grid-cols-3 gap-6">
                     @foreach($uptimeKumaMonitors as $monitor)
                     <!-- Mobile view (below 600px) -->
-                    <div class="metric-card xs:hidden">
+                    <style>
+                        .metric-card-mobile {
+                            display: none;
+                        }
+
+                        @media (max-width: 600px) {
+                            .metric-card-desktop {
+                                display: none;
+                            }
+
+                            .metric-card-mobile {
+                                display: flex;
+                            }
+                        }
+
+                    </style>
+                    <div class="metric-card metric-card-mobile">
                         <div class="flex items-center justify-between mb-2">
                             <span class="font-medium truncate max-w-[70%]">{{ $monitor['name'] ?? 'Website' }}</span>
                             <div class="flex items-center">
@@ -273,7 +289,7 @@
                     </div>
 
                     <!-- Desktop view remains unchanged -->
-                    <div class="metric-card hidden xs:block">
+                    <div class="metric-card metric-card-desktop">
                         <!-- Existing desktop view code remains the same -->
                         <div class="flex items-center justify-between mb-2">
                             <span class="font-medium">{{ $monitor['name'] ?? 'Website'  }}</span>
