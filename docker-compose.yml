@@ -14,13 +14,22 @@ services:
     networks:
       - analytix-network
     user: www-data
+    # Add this command to ensure directories exist and have proper permissions
+    command: >
+      bash -c "
+        mkdir -p /var/www/app/bootstrap/cache &&
+        chmod -R 775 /var/www/app/bootstrap/cache &&
+        mkdir -p /var/www/app/storage/framework/{sessions,views,cache} &&
+        chmod -R 775 /var/www/app/storage &&
+        php-fpm
+      "
 
   nginx:
     image: nginx:alpine
     container_name: analytix-nginx
     restart: unless-stopped
     ports:
-      - "${APP_PORT:-80}:80"
+      - "${APP_PORT:-9999}:80"
     volumes:
       - ./:/var/www/app:ro
       - ./docker/nginx:/etc/nginx/conf.d
