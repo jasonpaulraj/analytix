@@ -8,21 +8,13 @@ services:
     restart: unless-stopped
     working_dir: /var/www/app
     volumes:
-      - ./:/var/www/app:delegated
+      - ./storage:/var/www/app/storage
+      - ./bootstrap/cache:/var/www/app/bootstrap/cache
+      - ./.env:/var/www/app/.env
       - composer_cache:/var/www/.cache/composer
       - npm_cache:/var/www/.npm
     networks:
       - analytix-network
-    user: www-data
-    # Add this command to ensure directories exist and have proper permissions
-    command: >
-      bash -c "
-        mkdir -p /var/www/app/bootstrap/cache &&
-        chmod -R 775 /var/www/app/bootstrap/cache &&
-        mkdir -p /var/www/app/storage/framework/{sessions,views,cache} &&
-        chmod -R 775 /var/www/app/storage &&
-        php-fpm
-      "
 
   nginx:
     image: nginx:alpine
