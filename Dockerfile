@@ -49,15 +49,24 @@ RUN composer install --no-interaction --no-scripts \
 # Startup script (fix perms every time in case of mounted volumes)
 RUN echo '#!/bin/bash\n\
 echo "Running startup script..."\n\
+# Ensure correct ownership and permissions\n\
 chown -R www-data:www-data /var/www/app/bootstrap /var/www/app/storage\n\
+[ -f /var/www/app/.env ] && chown www-data:www-data /var/www/app/.env\n\
 chmod -R 775 /var/www/app/bootstrap/cache /var/www/app/storage\n\
+[ -f /var/www/app/.env ] && chmod 664 /var/www/app/.env\n\
+# Generate application key if missing\n\
 if [ -f /var/www/app/.env ] && (! grep -q "^APP_KEY=" /var/www/app/.env || grep -q "^APP_KEY=$" /var/www/app/.env); then\n\
   echo "Generating application key..."\n\
   php artisan key:generate --force\n\
 fi\n\
+# Clear and optimize Laravel caches as www-data\n\
+su -s /bin/bash www-data -c "php artisan config:clear" || true\n\
+su -s /bin/bash www-data -c "php artisan cache:clear" || true\n\
+su -s /bin/bash www-data -c "php artisan view:clear" || true\n\
 exec php-fpm\n\
 ' > /usr/local/bin/start.sh \
     && chmod +x /usr/local/bin/start.sh
+
 
 # Expose PHP-FPM
 EXPOSE 9000
