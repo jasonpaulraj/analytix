@@ -28,6 +28,9 @@ RUN curl -sL https://deb.nodesource.com/setup_18.x | bash - \
 # Set working directory
 WORKDIR /var/www/app
 
+# Copy the application code
+COPY --chown=www-data:www-data . /var/www/app
+
 # Create necessary directories and set permissions
 RUN mkdir -p /var/www/app/bootstrap/cache \
     && mkdir -p /var/www/app/storage/logs \
@@ -45,9 +48,6 @@ RUN mkdir -p /var/www/app/bootstrap/cache \
     && chmod -R 775 /var/www/.cache \
     && chmod -R 775 /var/www/.npm
 
-# Copy the application code
-COPY --chown=www-data:www-data . /var/www/app
-
 # Create startup script
 RUN echo '#!/bin/bash\n\
 echo "Running startup script..."\n\
@@ -56,8 +56,11 @@ git config --system --add safe.directory /var/www/app\n\
 # Ensure cache directories exist and have correct permissions\n\
 mkdir -p /var/www/app/bootstrap/cache\n\
 mkdir -p /var/www/app/storage/framework/{sessions,views,cache}\n\
-chown -R www-data:www-data /var/www/app/bootstrap/cache\n\
+mkdir -p /var/www/app/storage/logs\n\
+# Set ownership to www-data\n\
+chown -R www-data:www-data /var/www/app/bootstrap\n\
 chown -R www-data:www-data /var/www/app/storage\n\
+# Set proper permissions\n\
 chmod -R 775 /var/www/app/bootstrap/cache\n\
 chmod -R 775 /var/www/app/storage\n\
 # Generate application key if not exists\n\
@@ -65,8 +68,12 @@ if [ -f /var/www/app/.env ] && ! grep -q "^APP_KEY=" /var/www/app/.env || grep -
   echo "Generating application key..."\n\
   php artisan key:generate --force\n\
 fi\n\
-# Start PHP-FPM\n\
-exec php-fpm\n\
+# Clear and optimize Laravel caches as www-data\n\
+su -s /bin/bash www-data -c "php artisan config:clear" || true\n\
+su -s /bin/bash www-data -c "php artisan cache:clear" || true\n\
+su -s /bin/bash www-data -c "php artisan view:clear" || true\n\
+# Start PHP-FPM as www-data\n\
+exec su -s /bin/bash www-data -c "php-fpm"\n\
 ' > /usr/local/bin/start.sh
 
 # Make the script executable
@@ -84,6 +91,9 @@ RUN npm install
 
 # Build assets with Vite
 RUN npm run build
+
+# Switch back to root for startup script execution
+USER root
 
 # Expose port 9000 and start php-fpm server
 EXPOSE 9000
